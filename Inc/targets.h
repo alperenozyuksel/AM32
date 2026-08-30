@@ -2440,6 +2440,7 @@
 #define CURRENT_ADC_PIN LL_GPIO_PIN_6
 #define USE_SERIAL_TELEMETRY
 #define SOE_NTC
+#define USE_ADC_PA2
 #endif
 
 /*******************************   G071 Targets
