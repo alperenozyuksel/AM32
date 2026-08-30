@@ -19,8 +19,8 @@
 // #define BLPWR
 // #define HVFLYCOLOR
 // #define AM32REF_F051
-// #define SOE32_F051
-// #define SOE32_F051_NTC
+// #define S32_F051
+// #define S32_F051_NTC
 
 // #define G072ESC
 // #define G071ENABLE
