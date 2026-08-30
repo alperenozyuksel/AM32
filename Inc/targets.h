@@ -2412,7 +2412,7 @@
 #endif
 
 #ifdef S32_F051
-#define FILE_NAME "SOE32_F051"
+#define FILE_NAME "S32_F051"
 #define FIRMWARE_NAME "SO32 F051"
 #define DEAD_TIME 45
 #define HARDWARE_GROUP_F0_B
@@ -2427,7 +2427,7 @@
 #endif
 
 #ifdef S32_F051_NTC
-#define FILE_NAME "SOE32_F051_NTC"
+#define FILE_NAME "S32_F051_NTC"
 #define FIRMWARE_NAME "SO32 NTC F051"
 #define DEAD_TIME 45
 #define HARDWARE_GROUP_F0_B
