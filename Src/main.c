@@ -436,6 +436,9 @@ int e_com_time;
 
 uint16_t ADC_smoothed_input = 0;
 volatile int16_t degrees_celsius;
+#ifdef SOE_NTC
+int8_t final_mosfet;
+#endif
 int16_t converted_degrees;
 uint8_t temperature_offset;
 #ifdef NXP	// raw temperature uses two 16-bit values
@@ -474,6 +477,86 @@ uint8_t running = 0;
 uint16_t advance = 0;
 uint8_t advancedivisor = 6;
 volatile char rising = 1;
+
+
+#ifdef SOE_NTC
+#define LUT_SIZE 191
+const uint16_t ntc_adc_lut[LUT_SIZE] = {
+      36,   38,   41,   43,   46, // -40°C to -36°C
+      49,   52,   55,   58,   62, // -35°C to -31°C
+      65,   69,   73,   78,   82, // -30°C to -26°C
+      87,   91,   96,  102,  107, // -25°C to -21°C
+     113,  119,  125,  132,  139, // -20°C to -16°C
+     146,  153,  161,  169,  177, // -15°C to -11°C
+     186,  195,  204,  214,  224, // -10°C to -6°C
+     234,  245,  256,  267,  279, // -5°C to -1°C
+     292,  304,  317,  331,  345, // 0°C to 4°C
+     359,  374,  389,  405,  421, // 5°C to 9°C
+     437,  454,  471,  489,  508, // 10°C to 14°C
+     526,  546,  565,  585,  606, // 15°C to 19°C
+     627,  648,  670,  693,  715, // 20°C to 24°C
+     738,  762,  786,  810,  835, // 25°C to 29°C
+     861,  886,  912,  938,  965, // 30°C to 34°C
+     992, 1019, 1047, 1075, 1103, // 35°C to 39°C
+    1132, 1161, 1190, 1219, 1249, // 40°C to 44°C
+    1278, 1308, 1338, 1369, 1399, // 45°C to 49°C
+    1430, 1460, 1491, 1522, 1553, // 50°C to 54°C
+    1584, 1615, 1646, 1677, 1708, // 55°C to 59°C
+    1739, 1770, 1801, 1832, 1862, // 60°C to 64°C
+    1893, 1923, 1954, 1984, 2014, // 65°C to 69°C
+    2044, 2074, 2104, 2133, 2162, // 70°C to 74°C
+    2191, 2220, 2248, 2277, 2305, // 75°C to 79°C
+    2332, 2360, 2387, 2414, 2441, // 80°C to 84°C
+    2467, 2493, 2519, 2545, 2570, // 85°C to 89°C
+    2595, 2620, 2644, 2668, 2691, // 90°C to 94°C
+    2715, 2738, 2761, 2783, 2805, // 95°C to 99°C
+    2827, 2848, 2869, 2890, 2911, // 100°C to 104°C
+    2931, 2951, 2970, 2989, 3008, // 105°C to 109°C
+    3027, 3045, 3063, 3081, 3098, // 110°C to 114°C
+    3116, 3132, 3149, 3165, 3181, // 115°C to 119°C
+    3197, 3212, 3228, 3243, 3257, // 120°C to 124°C
+    3272, 3286, 3300, 3313, 3327, // 125°C to 129°C
+    3340, 3353, 3365, 3378, 3390, // 130°C to 134°C
+    3402, 3414, 3425, 3437, 3448, // 135°C to 139°C
+    3459, 3469, 3480, 3490, 3500, // 140°C to 144°C
+    3510, 3520, 3530, 3539, 3548, // 145°C to 149°C
+    3557  // 150°C
+};
+
+int8_t get_temperature_from_adc(uint16_t adc_raw) {
+    // Arama aralığını belirle
+    int left = 0;
+    int right = LUT_SIZE - 1;
+    int mid;
+
+    while (left <= right) {
+        mid = left + (right - left) / 2;
+        
+        if (ntc_adc_lut[mid] == adc_raw) {
+            int temp = mid - 40; // İndeks - 40 = Gerçek Sıcaklık
+            if (temp < -30) return -30;
+            if (temp > 127) return 127;
+            return (int8_t)temp;
+        }
+        
+        if (ntc_adc_lut[mid] < adc_raw) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    // Değer iki indeks arasındaysa en yakın olana yuvarla
+    int best_idx = ((adc_raw - ntc_adc_lut[left - 1]) < (ntc_adc_lut[left] - adc_raw)) ? (left - 1) : left;
+    int temp = best_idx - 40;
+    
+    // Kırpma (Clipping) işlemleri
+    if (temp < -30) return -30;
+    if (temp > 127) return 127;
+    return (int8_t)temp;
+}
+
+#endif
 
 ////Space Vector PWM ////////////////
 // const int pwmSin[] ={128, 132, 136, 140, 143, 147, 151, 155, 159, 162, 166,
@@ -2104,6 +2187,12 @@ if(zero_crosses < 5){
             send_telem_DMA(10);
             send_telemetry = 0;
 #endif
+#if defined(USE_SERIAL_TELEMETRY) && defined(SOE_NTC)
+            makeTelemPackage((int8_t)final_mosfet, battery_voltage, actual_current,
+                (uint16_t)(consumed_current >> 16), e_rpm);
+            send_telem_DMA(10);
+            send_telemetry = 0;
+#endif
         } else if(send_esc_info_flag ) {
            makeInfoPacket();
            send_telem_DMA(49);
@@ -2158,6 +2247,9 @@ if(zero_crosses < 5){
             battery_voltage = ((7 * battery_voltage) + ((ADC_raw_volts * 3300 / 4095 * VOLTAGE_DIVIDER) / 100)) >> 3;
             smoothed_raw_current = getSmoothedCurrent();
             actual_current = ((smoothed_raw_current * 3300 / 41) - (CURRENT_OFFSET * 100)) / (MILLIVOLT_PER_AMP);
+            #ifdef SOE_NTC
+            final_mosfet = get_temperature_from_adc(ADC_raw_pa2);
+            #endif
 #endif
             if (actual_current < 0) {
                 actual_current = 0;
