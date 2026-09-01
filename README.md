@@ -31,6 +31,7 @@ Dört target için kullanılan ortak ayarlar:
 - AT32F421 ADC DMA dizisi PA2 ölçümü için beş kanala çıkarılmıştır.
 - ADC değeri mevcut 191 elemanlı NTC LUT tablosuyla sıcaklığa çevrilir.
 - LUT araması binary search ile yapılır ve en yakın tam sıcaklık değeri seçilir.
+- LUT tablosu `-40°C` ile `150°C` arasını kapsar. Yazılımın telemetriye verdiği sıcaklık değeri ise `-30°C` ile `127°C` arasında sınırlandırılmıştır; bu aralığın dışındaki ölçümler en yakın sınıra kırpılır.
 - Harici NTC sıcaklığı standart seri telemetride ve DShot extended temperature telemetrisinde gönderilir.
 - Sıcaklık korumaları harici NTC'ye göre değil, işlemcinin dahili sıcaklık sensörüne göre çalışmaya devam eder.
 - Orijinal telemetri kodu bir `else` bloğuna taşınmamıştır. NTC ve standart yollar ayrı `SOE_NTC` / `!SOE_NTC` koşullarıyla seçilir.
