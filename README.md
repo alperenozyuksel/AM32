@@ -1,6 +1,5 @@
 # S32 AM32 Targetları
 
-Bu çalışma AM32 firmware **2.21** ve EEPROM sürümü **4** taban alınarak hazırlanmıştır.
 
 ## Eklenen targetlar
 
@@ -94,8 +93,7 @@ Hücre başı cutoff açıkken ESC ilk arm sırasında otomatik algıladığı h
 
 - Motor sargıları hoparlör gibi kullanılarak `playInputTune()` çalıştırılır.
 - Ton, algılanan hücre sayısı kadar tekrarlanır: 4S için 4, 5S için 5, 6S için 6 kez.
-- Her ton yaklaşık 300 ms sürer ve tonların arasında 100 ms beklenir.
-- Toplam bildirim süresi hücre başına yaklaşık 400 ms'dir. Örneğin 6S bildirimi yaklaşık 2,4 saniye sürer.
+
 
 ## Firmware 2.21 çıktıları
 
