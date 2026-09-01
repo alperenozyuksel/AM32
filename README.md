@@ -93,7 +93,6 @@ Yeni hesap ilk arm sırasında ölçülen batarya voltajını `4,20 V` değerine
 
 Hücre başı cutoff açıkken ESC ilk arm sırasında otomatik algıladığı hücre sayısını motor üzerinden sesli olarak bildirir. Bu ses düşük voltaj alarmı değildir; algılanan S sayısının onayıdır.
 
-- Motor sargıları hoparlör gibi kullanılarak `playInputTune()` çalıştırılır.
 - Ton, algılanan hücre sayısı kadar tekrarlanır: 4S için 4, 5S için 5, 6S için 6 kez.
 
 ### Cutoff uyarı tonu
