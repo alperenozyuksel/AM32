@@ -1072,6 +1072,15 @@ static uint8_t startVoltageIsBelowCutoff(void)
     return 0;
 }
 
+static void playLowVoltageCutoffTone(void)
+{
+    for (uint8_t i = 0; i < 5; i++) {
+        playBeaconTune3();
+        delayMillis(150);
+        RELOAD_WATCHDOG_COUNTER();
+    }
+}
+
 static void abortMotorStartForLowVoltage(void)
 {
     uint8_t play_cutoff_tone = !LOW_VOLTAGE_CUTOFF;
@@ -1085,7 +1094,7 @@ static void abortMotorStartForLowVoltage(void)
     zero_input_count = 0;
     armed = 0;
     if (play_cutoff_tone) {
-        playBeaconTune3();
+        playLowVoltageCutoffTone();
     }
 }
 
@@ -2330,7 +2339,7 @@ if(zero_crosses < 5){
               zero_input_count = 0;
               armed = 0;
               if (play_cutoff_tone) {
-                playBeaconTune3();
+                playLowVoltageCutoffTone();
               }
              }
            
