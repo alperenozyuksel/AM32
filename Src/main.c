@@ -1074,6 +1074,7 @@ static uint8_t startVoltageIsBelowCutoff(void)
 
 static void abortMotorStartForLowVoltage(void)
 {
+    uint8_t play_cutoff_tone = !LOW_VOLTAGE_CUTOFF;
     LOW_VOLTAGE_CUTOFF = 1;
     input = 0;
     allOff();
@@ -1083,6 +1084,9 @@ static void abortMotorStartForLowVoltage(void)
     do_once_sinemode = 1;
     zero_input_count = 0;
     armed = 0;
+    if (play_cutoff_tone) {
+        playDefaultTone();
+    }
 }
 
 void setInput()
@@ -1488,7 +1492,9 @@ void tenKhzRoutine()
                             setIndividualRGBLed(0,1,0);
 #endif
                             if ((cell_count == 0) && eepromBuffer.low_voltage_cut_off == 1) {
-                                cell_count = battery_voltage / 370;
+                                // Select the lowest cell count whose fully charged voltage can
+                                // contain the measured pack voltage (ceil(pack_voltage / 4.20 V)).
+                                cell_count = (battery_voltage + 419) / 420;
                                 for (int i = 0; i < cell_count; i++) {
                                     playInputTune();
                                     delayMillis(100);
@@ -2315,6 +2321,7 @@ if(zero_crosses < 5){
                 }
             }
             if (low_voltage_count > (10000 - (stepper_sine * 9900))) {      // 10 second wait before cut-off for low voltage
+              uint8_t play_cutoff_tone = !LOW_VOLTAGE_CUTOFF;
               LOW_VOLTAGE_CUTOFF = 1;
               input = 0;
               allOff();
@@ -2322,6 +2329,9 @@ if(zero_crosses < 5){
               running = 0;
               zero_input_count = 0;
               armed = 0;
+              if (play_cutoff_tone) {
+                playDefaultTone();
+              }
              }
            
             PROCESS_ADC_FLAG = 0;

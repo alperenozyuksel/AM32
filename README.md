@@ -71,21 +71,23 @@ Motor durmuşken başlangıç kontrolü bu süreyi beklemez; ölçülen voltaj e
 
 ### Otomatik hücre sayısı algılama tablosu
 
-Firmware hücre sayısını ilk arm sırasında ölçülen batarya voltajını `3,70 V` değerine bölerek belirler. Hücre sayısı belirlendikten sonra hücre başı cutoff toplam eşik hesabında bu değer kullanılır.
+Önceki hesap ölçülen voltajı `3,70 V` değerine bölüp aşağı yuvarladığı için `22,00 V` değerini 6S yerine 5S algılayabiliyordu. Hücre bazlı cutoff eşiği bu nedenle gereğinden düşük hesaplanıyordu.
+
+Yeni hesap ilk arm sırasında ölçülen batarya voltajını `4,20 V` değerine bölüp yukarı yuvarlar. Hücre sayısı belirlendikten sonra hücre başı cutoff toplam eşik hesabında bu değer kullanılır.
 
 | İlk arm sırasında ölçülen voltaj | Algılanan batarya |
 | ---: | ---: |
-| 3,70–7,39 V | 1S |
-| 7,40–11,09 V | 2S |
-| 11,10–14,79 V | 3S |
-| 14,80–18,49 V | 4S |
-| 18,50–22,19 V | 5S |
-| 22,20–25,89 V | 6S |
-| 25,90–29,59 V | 7S |
-| 29,60–33,29 V | 8S |
-| 33,30–36,99 V | 9S |
+| 0,01–4,20 V | 1S |
+| 4,21–8,40 V | 2S |
+| 8,41–12,60 V | 3S |
+| 12,61–16,80 V | 4S |
+| 16,81–21,00 V | 5S |
+| 21,01–25,20 V | 6S |
+| 25,21–29,40 V | 7S |
+| 29,41–33,60 V | 8S |
+| 33,61–37,80 V | 9S |
 
-Örneğin `22,00 V` değeri 5S, `22,20 V` değeri ise 6S olarak algılanır.
+Örneğin `22,00 V` ve `25,20 V` değerleri 6S, `25,21 V` değeri ise 7S olarak algılanır.
 
 ### Hücre sayısının sesli bildirimi
 
@@ -93,6 +95,10 @@ Hücre başı cutoff açıkken ESC ilk arm sırasında otomatik algıladığı h
 
 - Motor sargıları hoparlör gibi kullanılarak `playInputTune()` çalıştırılır.
 - Ton, algılanan hücre sayısı kadar tekrarlanır: 4S için 4, 5S için 5, 6S için 6 kez.
+
+### Cutoff uyarı tonu
+
+Düşük voltaj cutoff ilk kez oluştuğunda motor üzerinden bir kez `playDefaultTone()` uyarısı çalınır. Cutoff kilitli kaldığı sürece ton tekrar tekrar çalınmaz. Bu uyarı hem başlangıçta anında iptal edilen kalkışta hem de sürüş sırasında gecikme sonunda gerçekleşen kesmede kullanılır.
 
 
 ## Firmware 2.21 çıktıları
