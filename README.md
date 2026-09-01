@@ -75,7 +75,8 @@ Motor durmuşken başlangıç kontrolü bu süreyi beklemez; ölçülen voltaj e
 
 Yeni hesap ilk arm sırasında ölçülen batarya voltajını `4,20 V` değerine bölüp yukarı yuvarlar. Hücre sayısı belirlendikten sonra hücre başı cutoff toplam eşik hesabında bu değer kullanılır.
 
-> Hücre bazlı kesmede ilk kalkışta güvenilir kesme yapılmaz; çünkü ESC gerçek hücre sayısını bilmiyor, yalnızca ölçtüğü toplam batarya voltajından tahmin ediyor. Batarya zaten düşükse örneğin 6S paketi 5S algılayarak toplam kesme eşiğini de aşağı çekiyor.
+> [!WARNING]
+> **Hücre bazlı ilk kalkış sınırlaması:** Hücre bazlı kesmede ilk kalkışta güvenilir kesme yapılmaz; çünkü ESC gerçek hücre sayısını bilmiyor, yalnızca ölçtüğü toplam batarya voltajından tahmin ediyor. Batarya zaten düşükse örneğin 6S paketi 5S algılayarak toplam kesme eşiğini de aşağı çekiyor.
 
 | İlk arm sırasında ölçülen voltaj | Algılanan batarya |
 | ---: | ---: |
