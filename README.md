@@ -42,7 +42,6 @@ Motor çalışırken AM32'nin orijinal düşük voltaj koruması korunmuştur:
 - Sürüş sırasında kısa süreli voltaj çökmelerinde motor hemen kapatılmaz.
 - Orijinal sürekli düşük voltaj sayacı ve yaklaşık 10 saniyelik kesme gecikmesi kullanılır.
 - Düşük voltaj kesmesi kilitli kalır ve güç döngüsüyle sıfırlanır.
-- Otomatik voltaj toparlanması veya kendiliğinden yeniden başlatma eklenmemiştir.
 
 Yalnızca motor kalkışı için ek bir kontrol eklenmiştir:
 
