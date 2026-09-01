@@ -1501,9 +1501,7 @@ void tenKhzRoutine()
                             setIndividualRGBLed(0,1,0);
 #endif
                             if ((cell_count == 0) && eepromBuffer.low_voltage_cut_off == 1) {
-                                // Select the lowest cell count whose fully charged voltage can
-                                // contain the measured pack voltage (ceil(pack_voltage / 4.20 V)).
-                                cell_count = (battery_voltage + 419) / 420;
+                                cell_count = battery_voltage / 370;
                                 for (int i = 0; i < cell_count; i++) {
                                     playInputTune();
                                     delayMillis(100);

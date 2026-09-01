@@ -71,26 +71,24 @@ Motor durmuşken başlangıç kontrolü bu süreyi beklemez; ölçülen voltaj e
 
 ### Otomatik hücre sayısı algılama tablosu
 
-Önceki hesap ölçülen voltajı `3,70 V` değerine bölüp aşağı yuvarladığı için `22,00 V` değerini 6S yerine 5S algılayabiliyordu. Hücre bazlı cutoff eşiği bu nedenle gereğinden düşük hesaplanıyordu.
-
-Yeni hesap ilk arm sırasında ölçülen batarya voltajını `4,20 V` değerine bölüp yukarı yuvarlar. Hücre sayısı belirlendikten sonra hücre başı cutoff toplam eşik hesabında bu değer kullanılır.
+Firmware, orijinal AM32 mantığında olduğu gibi hücre sayısını ilk arm sırasında ölçülen batarya voltajını `3,70 V` değerine bölüp aşağı yuvarlayarak belirler. Hücre sayısı belirlendikten sonra hücre başı cutoff toplam eşik hesabında bu değer kullanılır.
 
 > [!WARNING]
 > **Hücre bazlı ilk kalkış sınırlaması:** Hücre bazlı kesmede ilk kalkışta güvenilir kesme yapılmaz; çünkü ESC gerçek hücre sayısını bilmiyor, yalnızca ölçtüğü toplam batarya voltajından tahmin ediyor. Batarya zaten düşükse örneğin 6S paketi 5S algılayarak toplam kesme eşiğini de aşağı çekiyor.
 
 | İlk arm sırasında ölçülen voltaj | Algılanan batarya |
 | ---: | ---: |
-| 0,01–4,20 V | 1S |
-| 4,21–8,40 V | 2S |
-| 8,41–12,60 V | 3S |
-| 12,61–16,80 V | 4S |
-| 16,81–21,00 V | 5S |
-| 21,01–25,20 V | 6S |
-| 25,21–29,40 V | 7S |
-| 29,41–33,60 V | 8S |
-| 33,61–37,80 V | 9S |
+| 3,70–7,39 V | 1S |
+| 7,40–11,09 V | 2S |
+| 11,10–14,79 V | 3S |
+| 14,80–18,49 V | 4S |
+| 18,50–22,19 V | 5S |
+| 22,20–25,89 V | 6S |
+| 25,90–29,59 V | 7S |
+| 29,60–33,29 V | 8S |
+| 33,30–36,99 V | 9S |
 
-Örneğin `22,00 V` ve `25,20 V` değerleri 6S, `25,21 V` değeri ise 7S olarak algılanır.
+Örneğin `22,00 V` değeri 5S, `22,20 V` ve `25,20 V` değerleri ise 6S olarak algılanır.
 
 ### Hücre sayısının sesli bildirimi
 
