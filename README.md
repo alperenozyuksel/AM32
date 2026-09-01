@@ -52,7 +52,7 @@ Yalnızca motor kalkışı için ek bir kontrol eklenmiştir:
 
 ## Firmware 2.21 çıktıları
 
-Derlenen ve AM32 DroneCAN uygulama imzası eklenen dosyalar:
+Derlenen eklenen dosyalar:
 
 - `AM32_S32_F051_2.21.bin` / `.elf` / `.hex`
 - `AM32_S32_F051_NTC_2.21.bin` / `.elf` / `.hex`
