@@ -65,6 +65,10 @@ uint8_t dshot_extended_telemetry = 0;
 uint16_t processtime = 0;
 uint16_t halfpulsetime = 0;
 
+#ifdef SOE_NTC
+extern int8_t final_mosfet;
+#endif
+
 uint8_t programming_mode;
 uint16_t position;
 uint8_t  new_byte;
@@ -262,7 +266,11 @@ void make_dshot_package(uint16_t com_time)
                 telem_scheduler.voltage_count = 0;
             }
             else if (telem_scheduler.temp_count >= TEMP_EDT_RATE_DIVISOR) {
+#ifdef SOE_NTC
+                extended_frame_to_send = 0b0010 << 8 | (uint8_t)final_mosfet;
+#else
                 extended_frame_to_send = 0b0010 << 8 | (uint8_t)degrees_celsius;
+#endif
                 telem_scheduler.temp_count = 0;
             }
         }

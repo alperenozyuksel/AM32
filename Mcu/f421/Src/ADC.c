@@ -7,7 +7,11 @@
 #ifdef USE_ADC
 
 
-#if defined(USE_ADC_INPUT) || defined(USE_NTC)
+#if defined(USE_ADC_INPUT) && defined(USE_ADC_PA2)
+#error "USE_ADC_INPUT and USE_ADC_PA2 cannot be enabled at the same time"
+#endif
+
+#if defined(USE_ADC_INPUT) || defined(USE_NTC) || defined(USE_ADC_PA2)
 uint16_t ADCDataDMA[5];
 #else
 uint16_t ADCDataDMA[4];
@@ -19,6 +23,7 @@ extern uint16_t ADC_raw_volts;
 extern uint16_t ADC_raw_current;
 extern uint16_t ADC_raw_input;
 extern uint16_t ADC_raw_ntc;
+extern uint16_t ADC_raw_pa2;
 
 void ADC_DMA_Callback()
 { // read dma buffer and set extern variables
@@ -27,17 +32,20 @@ void ADC_DMA_Callback()
     ADC_raw_volts = ADCDataDMA[1] / 2;
     ADC_raw_current = ADCDataDMA[2];
     ADC_raw_input = ADCDataDMA[0];
-#else
-  #ifdef USE_NTC
+#elif defined(USE_NTC)
     ADC_raw_ntc = ADCDataDMA[4];
     ADC_raw_temp = ADCDataDMA[3];
     ADC_raw_volts = ADCDataDMA[0];
     ADC_raw_current = ADCDataDMA[1];
-  #else
+#elif defined(USE_ADC_PA2)
+    ADC_raw_pa2 = ADCDataDMA[4];
     ADC_raw_temp = ADCDataDMA[3];
     ADC_raw_volts = ADCDataDMA[0];
     ADC_raw_current = ADCDataDMA[1];
-  #endif
+#else
+    ADC_raw_temp = ADCDataDMA[3];
+    ADC_raw_volts = ADCDataDMA[0];
+    ADC_raw_current = ADCDataDMA[1];
 #endif
 }
 
@@ -51,7 +59,9 @@ void ADC_Init(void)
     gpio_mode_QUICK(GPIOA, GPIO_MODE_ANALOG, GPIO_PULL_NONE, VOLTAGE_ADC_PIN);
 #ifdef USE_NTC
     gpio_mode_QUICK(GPIOA, GPIO_MODE_ANALOG, GPIO_PULL_NONE, NTC_ADC_PIN);
-#endif 
+#elif defined(USE_ADC_PA2)
+    gpio_mode_QUICK(GPIOA, GPIO_MODE_ANALOG, GPIO_PULL_NONE, GPIO_PINS_2);
+#endif
 
 
 	dma_init_type dma_init_struct;
@@ -59,7 +69,7 @@ void ADC_Init(void)
     // nvic_irq_enable(DMA1_Channel1_IRQn, 3, 0);
     dma_reset(DMA1_CHANNEL1);
     dma_default_para_init(&dma_init_struct);
-#ifdef USE_NTC
+#if defined(USE_NTC) || defined(USE_ADC_PA2)
     dma_init_struct.buffer_size = 5;
 #else
     dma_init_struct.buffer_size = 4;
@@ -94,6 +104,14 @@ void ADC_Init(void)
     adc_ordinary_channel_set(ADC1, ADC_CHANNEL_17, 3, ADC_SAMPLETIME_28_5);
     adc_ordinary_channel_set(ADC1, TEMP_ADC_CHANNEL, 4, ADC_SAMPLETIME_239_5);
     adc_ordinary_channel_set(ADC1, NTC_ADC_CHANNEL, 5, ADC_SAMPLETIME_28_5);
+#elif defined(USE_ADC_PA2)
+    adc_base_struct.ordinary_channel_length = 5;
+    adc_base_config(ADC1, &adc_base_struct);
+    adc_ordinary_channel_set(ADC1, VOLTAGE_ADC_CHANNEL, 1, ADC_SAMPLETIME_28_5);
+    adc_ordinary_channel_set(ADC1, CURRENT_ADC_CHANNEL, 2, ADC_SAMPLETIME_28_5);
+    adc_ordinary_channel_set(ADC1, ADC_CHANNEL_17, 3, ADC_SAMPLETIME_28_5);
+    adc_ordinary_channel_set(ADC1, TEMP_ADC_CHANNEL, 4, ADC_SAMPLETIME_239_5);
+    adc_ordinary_channel_set(ADC1, ADC_CHANNEL_2, 5, ADC_SAMPLETIME_28_5);
 #else
     adc_base_struct.ordinary_channel_length = 4;
     adc_base_config(ADC1, &adc_base_struct);

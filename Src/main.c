@@ -525,35 +525,40 @@ const uint16_t ntc_adc_lut[LUT_SIZE] = {
 };
 
 int8_t get_temperature_from_adc(uint16_t adc_raw) {
-    // Arama aralığını belirle
+    // Keep the lookup inside the valid table range before binary searching.
+    if (adc_raw <= ntc_adc_lut[0]) {
+        return -30;
+    }
+    if (adc_raw >= ntc_adc_lut[LUT_SIZE - 1]) {
+        return 127;
+    }
+
     int left = 0;
     int right = LUT_SIZE - 1;
-    int mid;
 
-    while (left <= right) {
-        mid = left + (right - left) / 2;
-        
-        if (ntc_adc_lut[mid] == adc_raw) {
-            int temp = mid - 40; // İndeks - 40 = Gerçek Sıcaklık
-            if (temp < -30) return -30;
-            if (temp > 127) return 127;
-            return (int8_t)temp;
-        }
-        
+    // Find the first LUT entry greater than or equal to the ADC sample.
+    while (left < right) {
+        int mid = left + (right - left) / 2;
         if (ntc_adc_lut[mid] < adc_raw) {
             left = mid + 1;
         } else {
-            right = mid - 1;
+            right = mid;
         }
     }
-    
-    // Değer iki indeks arasındaysa en yakın olana yuvarla
-    int best_idx = ((adc_raw - ntc_adc_lut[left - 1]) < (ntc_adc_lut[left] - adc_raw)) ? (left - 1) : left;
+
+    // Round samples between two entries to the nearest whole degree.
+    int best_idx = ((adc_raw - ntc_adc_lut[left - 1]) <
+                       (ntc_adc_lut[left] - adc_raw))
+        ? (left - 1)
+        : left;
     int temp = best_idx - 40;
-    
-    // Kırpma (Clipping) işlemleri
-    if (temp < -30) return -30;
-    if (temp > 127) return 127;
+
+    if (temp < -30) {
+        return -30;
+    }
+    if (temp > 127) {
+        return 127;
+    }
     return (int8_t)temp;
 }
 
@@ -1056,6 +1061,30 @@ void startMotor()
     enableCompInterrupts();
 }
 
+static uint8_t startVoltageIsBelowCutoff(void)
+{
+    if (eepromBuffer.low_voltage_cut_off == 1) {
+        return cell_count > 0 && battery_voltage < (cell_count * low_cell_volt_cutoff);
+    }
+    if (eepromBuffer.low_voltage_cut_off == 2) {
+        return battery_voltage < (eepromBuffer.absolute_voltage_cutoff * 50);
+    }
+    return 0;
+}
+
+static void abortMotorStartForLowVoltage(void)
+{
+    LOW_VOLTAGE_CUTOFF = 1;
+    input = 0;
+    allOff();
+    maskPhaseInterrupts();
+    running = 0;
+    stepper_sine = 0;
+    do_once_sinemode = 1;
+    zero_input_count = 0;
+    armed = 0;
+}
+
 void setInput()
 {
     if (eepromBuffer.bi_direction) {
@@ -1273,6 +1302,18 @@ void setInput()
 #endif
     }
 #endif
+
+#ifndef BRUSHED_MODE
+    // Do not energize the motor when a start is requested below the configured cutoff.
+    // Once running, the original AM32 undervoltage delay remains in control.
+    uint8_t motor_start_requested = eepromBuffer.use_sine_start ? (input > 48) : (input >= 47);
+    if (!running && armed && motor_start_requested &&
+        (LOW_VOLTAGE_CUTOFF || startVoltageIsBelowCutoff())) {
+        abortMotorStartForLowVoltage();
+        return;
+    }
+#endif
+
 #ifndef BRUSHED_MODE
 if (!stepper_sine && armed) {
         if (input >= 47 + (80 * eepromBuffer.use_sine_start)) {
@@ -2183,8 +2224,14 @@ if(zero_crosses < 5){
 #endif
         if (send_telemetry) {
 #ifdef USE_SERIAL_TELEMETRY
+#ifdef SOE_NTC
+            makeTelemPackage(final_mosfet, battery_voltage, actual_current,
+                (uint16_t)(consumed_current >> 16), e_rpm);
+#endif
+#ifndef SOE_NTC
             makeTelemPackage((int8_t)degrees_celsius, battery_voltage, actual_current,
                 (uint16_t)(consumed_current >> 16), e_rpm);
+#endif
             send_telem_DMA(10);
             send_telemetry = 0;
 #endif
