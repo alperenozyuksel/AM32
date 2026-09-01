@@ -97,7 +97,7 @@ Hücre başı cutoff açıkken ESC ilk arm sırasında otomatik algıladığı h
 
 ### Cutoff uyarı tonu
 
-Düşük voltaj cutoff ilk kez oluştuğunda motor üzerinden bir kez `playDefaultTone()` uyarısı çalınır. Cutoff kilitli kaldığı sürece ton tekrar tekrar çalınmaz. Bu uyarı hem başlangıçta anında iptal edilen kalkışta hem de sürüş sırasında gecikme sonunda gerçekleşen kesmede kullanılır.
+Düşük voltaj cutoff ilk kez oluştuğunda gaz yüksek/kalibrasyon uyarısında kullanılan taramalı `playBeaconTune3()` tonu bir kez çalınır. Cutoff kilitli kaldığı sürece ton tekrar tekrar çalınmaz. Bu uyarı hem başlangıçta anında iptal edilen kalkışta hem de sürüş sırasında gecikme sonunda gerçekleşen kesmede kullanılır.
 
 
 ## Firmware 2.21 çıktıları

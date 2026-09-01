@@ -1085,7 +1085,7 @@ static void abortMotorStartForLowVoltage(void)
     zero_input_count = 0;
     armed = 0;
     if (play_cutoff_tone) {
-        playDefaultTone();
+        playBeaconTune3();
     }
 }
 
@@ -2330,7 +2330,7 @@ if(zero_crosses < 5){
               zero_input_count = 0;
               armed = 0;
               if (play_cutoff_tone) {
-                playDefaultTone();
+                playBeaconTune3();
               }
              }
            
