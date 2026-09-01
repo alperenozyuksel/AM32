@@ -31,7 +31,7 @@ Dört target için kullanılan ortak ayarlar:
 - ADC değeri mevcut 191 elemanlı NTC LUT tablosuyla sıcaklığa çevrilir.
 - LUT araması binary search ile yapılır ve en yakın tam sıcaklık değeri seçilir.
 - Yazılım NTC sıcaklığını `-30°C` ile `127°C` arasında okur.
-- Harici NTC sıcaklığı standart seri telemetride ve DShot extended temperature telemetrisinde gönderilir.
+- Harici NTC sıcaklığı standart seri telemetride ve BiDShot telemetrisinde gönderilir.
 - Sıcaklık korumaları harici NTC'ye göre değil, işlemcinin dahili sıcaklık sensörüne göre çalışmaya devam eder.
 - Orijinal telemetri kodu bir `else` bloğuna taşınmamıştır. NTC ve standart yollar ayrı `SOE_NTC` / `!SOE_NTC` koşullarıyla seçilir.
 
@@ -43,7 +43,7 @@ Motor çalışırken AM32'nin orijinal düşük voltaj koruması korunmuştur:
 - Orijinal sürekli düşük voltaj sayacı ve yaklaşık 10,5 saniyelik kesme gecikmesi kullanılır.
 - Düşük voltaj kesmesi kilitli kalır ve güç döngüsüyle sıfırlanır.
 
-Yalnızca motor kalkışı için ek bir kontrol eklenmiştir:
+Motor kalkışı için ek bir kontrol eklenmiştir:
 
 - Motor durmuşken kalkış komutu geldiğinde voltaj ayarlanan hücre başına veya mutlak kesme eşiğinin altındaysa fazlar enerjilendirilmeden kalkış iptal edilir.
 - Bu kontrol hem normal başlangıç hem de sinüzoidal başlangıç için geçerlidir.
