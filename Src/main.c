@@ -2183,7 +2183,7 @@ if(zero_crosses < 5){
 #endif
         if (send_telemetry) {
 #ifdef USE_SERIAL_TELEMETRY
-            makeTelemPackage((int8_t)final_mosfet, battery_voltage, actual_current,
+            makeTelemPackage((int8_t)degrees_celsius, battery_voltage, actual_current,
                 (uint16_t)(consumed_current >> 16), e_rpm);
             send_telem_DMA(10);
             send_telemetry = 0;
