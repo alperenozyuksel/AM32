@@ -52,7 +52,7 @@ Motor kalkışı için ek bir kontrol eklenmiştir:
 ### Hücre başı cutoff tablosu
 
 Firmware hücre başı cutoff değerini `2,50 V` ile `3,50 V` arasında `0,01 V` adımlarla destekler. Aşağıdaki tabloda okunabilirlik için `0,10 V` aralıklar gösterilmiştir. Normal sürüşte voltajın eşik altında kesintisiz yaklaşık 10,5 saniye kalması gerekir; eşik üzerine çıkan bir ölçüm sayacı sıfırlar.
-
+Hücre sayısı: toplam voltaj / 3,70 V
 | Hücre başı cutoff | 2S toplam | 3S toplam | 4S toplam | 5S toplam | 6S toplam | Kesme süresi |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | 2,50 V | 5,00 V | 7,50 V | 10,00 V | 12,50 V | 15,00 V | ≈10,5 sn |
